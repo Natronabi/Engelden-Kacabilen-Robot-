@@ -24,15 +24,18 @@ int mesafe;
 // Bu kısımlar donanım bağlantısına göre (L298N DC motor sürücüye göre) doldurulacaktır.
 
 void motorIleri() { 
-  // TODO: İki motoru ileri yönde sürecek komutlar
+    digitalWrite(IN1, HIGH); digitalWrite(IN2, LOW); analogWrite(ENA, 200);
+    digitalWrite(IN3, HIGH); digitalWrite(IN4, LOW); analogWrite(ENB, 200);
 }
 
 void motorSag() { 
-  // TODO: Eksenel sağa dönüş (Sağ teker geri, Sol teker ileri) komutlar
+    digitalWrite(IN1, HIGH); digitalWrite(IN2, LOW); analogWrite(ENA, 150);
+    digitalWrite(IN3, LOW);  digitalWrite(IN4, HIGH); analogWrite(ENB, 150);
 }
 
 void motorDur() { 
-  // TODO: Tüm motor sürücü pinlerini LOW (0) konumuna getirecek komutlar
+    digitalWrite(IN1, LOW); digitalWrite(IN2, LOW); analogWrite(ENA, 0);
+    digitalWrite(IN3, LOW); digitalWrite(IN4, LOW); analogWrite(ENB, 0);
 }
 
 void setup() {
@@ -65,6 +68,7 @@ void loop() {
   digitalWrite(trigPin, LOW);
   sure = pulseIn(echoPin, HIGH);
   mesafe = sure * 0.034 / 2;
+  lcd.setCursor(0, 0); lcd.print("                ");
 
   // 2. LCD ÜST SATIR (Radar & Mesafe Verisi)
   lcd.setCursor(0, 0);
