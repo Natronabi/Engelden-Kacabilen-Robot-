@@ -1,11 +1,22 @@
 #include <Arduino.h>
 #include <LiquidCrystal.h>
 
-// LCD Donanım (16x2)
-LiquidCrystal lcd(12, 11, 5, 4, 3, 2); 
+// LCD Donanım (16x2) Bağlantıları (RS, E, D4, D5, D6, D7)
+LiquidCrystal lcd(A0, A1, A2, A3, A4, A5); 
 
-const int trigPin = 9;
-const int echoPin = 10;
+// HC-SR04 Sensör Bağlantıları
+const int trigPin = 12; // PB4
+const int echoPin = 13; // PB5
+
+// L298N Motor Sürücü Bağlantıları
+const int IN1 = 9;  // PB1 (Sol İleri)
+const int IN2 = 8;  // PB0 (Sol Geri)
+const int ENA = 10; // PB2 (Sol Motor Hız - PWM)
+
+const int IN3 = 7;  // PD7 (Sağ İleri)
+const int IN4 = 6;  // PD6 (Sağ Geri)
+const int ENB = 5;  // PD5 (Sağ Motor Hız - PWM)
+
 long sure;
 int mesafe;
 
@@ -25,12 +36,26 @@ void motorDur() {
 }
 
 void setup() {
+  // LCD Başlatma
   lcd.begin(16, 2);
+  
+  // Sensör Pin Ayarları
   pinMode(trigPin, OUTPUT);
   pinMode(echoPin, INPUT);
   
+  // Motor Pin Ayarları
+  pinMode(IN1, OUTPUT);
+  pinMode(IN2, OUTPUT);
+  pinMode(IN3, OUTPUT);
+  pinMode(IN4, OUTPUT);
+  pinMode(ENA, OUTPUT);
+  pinMode(ENB, OUTPUT);
+
+  // Açılış Ekranı
+  lcd.setCursor(0,0);
   lcd.print("IKA SISTEM HAZIR");
   delay(1000);
+  lcd.clear();
 }
 
 void loop() {
