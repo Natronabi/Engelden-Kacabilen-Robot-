@@ -48,6 +48,8 @@ void motorIleriYavas() {
     digitalWrite(IN3, HIGH); digitalWrite(IN4, LOW); analogWrite(ENB, 100);
 }
 
+
+
 void setup() {
   // LCD Başlatma
   lcd.begin(16, 2);
@@ -73,11 +75,14 @@ void setup() {
 
 void loop() {
   // 1. MESAFE ÖLÇÜMÜ (Ses Hızı Hesabı Dahil)
-  digitalWrite(trigPin, LOW); delayMicroseconds(2);
-  digitalWrite(trigPin, HIGH); delayMicroseconds(10);
+  digitalWrite(trigPin, LOW); 
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH); 
+  delayMicroseconds(10);
   digitalWrite(trigPin, LOW);
   sure = pulseIn(echoPin, HIGH);
   mesafe = sure * 0.034 / 2;
+  
   lcd.setCursor(0, 0); lcd.print("                ");
 
   // 2. LCD ÜST SATIR (Radar & Mesafe Verisi)
