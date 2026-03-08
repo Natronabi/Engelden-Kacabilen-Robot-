@@ -21,6 +21,28 @@ long sure;
 int mesafe;
 int esik = 25;
 
+//MOTOR KONTROL KATMANI (TUBA'NIN KULLANACAĞI ALT YAPI)
+
+void motorIleriHizli(){
+  digitalWrite(IN1 , HIGH);digitalWrite(IN2 , LOW);analogWrite(ENA , 200);
+  digitalWrite(IN3 , HIGH);digitalWrite(IN4 , LOW);analogWrite(ENB , 200);
+}
+void motorIleriYavas(){
+  digitalWrite(IN1 , HIGH);digitalWrite(IN2 , LOW);analogWrite(ENA , 100);
+  digitalWrite(IN3 , HIGH);digitalWrite(IN4 , LOW);analogWrite(ENB , 100);
+}
+void motorSag(){
+  digitalWrite(IN1 , HIGH);digitalWrite(IN2 , LOW);analogWrite(ENA , 150);
+  digitalWrite(IN3 , LOW);digitalWrite(IN4 , HIGH);analogWrite(ENB , 150);
+}
+void motorDur(){
+  digitalWrite(IN1 , LOW);digitalWrite(IN2 , LOW);analogWrite(ENA , 0);
+  digitalWrite(IN3 , LOW);digitalWrite(IN4 , LOW);analogWrite(ENB , 0);
+}
+void motorGeri(){
+  digitalWrite(IN1 , LOW);digitalWrite(IN2 , HIGH);analogWrite(ENA , 200);
+  digitalWrite(IN3 , LOW);digitalWrite(IN4 , HIGH);analogWrite(ENB , 200);
+}
 // ŞURZAN GÖREV 1: Mesafe ölçüm fonksiyonu
 void mesafeOlcum() {
   digitalWrite(trigPin, LOW); 
@@ -54,6 +76,9 @@ void lcdUyariYazdir(String mesaj) {
 // TUBA GÖREV 1: Manevra fonksiyonlarının oluşturulması
 void engelKacinmaManevrasiniAktifEt() {
   // TUBA: Buraya akış şemasına göre motorDur, motorGeri ve motorSag fonksiyonlarını/kodlarını ekle.
+  motorDur();
+  motorGeri();
+  motorSag();
   lcdUyariYazdir("! ENGEL VAR !");
 }
 
@@ -61,8 +86,10 @@ void engelKacinmaManevrasiniAktifEt() {
 void hizKontrolModulu() {
   // TUBA: Buraya mesafeye göre (mesafe > 50 ise hızlı, 25-50 arası yavaş) motorIleri kodlarını ekle.
   if (mesafe > 50) {
+    motorIleriHizli();
     lcdUyariYazdir("YOL TEMIZ >>>");
   } else if (mesafe <= 50 && mesafe > 25) {
+    motorIleriYavas();
     lcdUyariYazdir("YAVAS SURUS...");
   }
 }
