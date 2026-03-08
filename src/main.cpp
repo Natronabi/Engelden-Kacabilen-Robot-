@@ -20,6 +20,7 @@ const int ENB = 5;  // PD5 (Sağ Motor Hız - PWM)
 unsigned long baslangicZamani = millis();
 long sure;
 int mesafe;
+int esik = 25;
 int donusZamani = 0;
 
 // --- MOTOR KONTROL KATMANI ---
@@ -82,7 +83,7 @@ void loop() {
   digitalWrite(trigPin, LOW);
   sure = pulseIn(echoPin, HIGH);
   mesafe = sure * 0.034 / 2;
-  
+
   lcd.setCursor(0, 0); lcd.print("                ");
 
   // 2. LCD ÜST SATIR (Radar & Mesafe Verisi)
@@ -100,7 +101,7 @@ void loop() {
     motorIleriYavas(); 
   }
  
-  else if (mesafe < 25) {
+  else if (mesafe < esik) {
     // --- ENGEL MODU ---
     if(millis()-baslangicZamani >= 5000) {
       lcd.print("!HATA");
