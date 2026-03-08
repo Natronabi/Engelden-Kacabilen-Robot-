@@ -37,6 +37,11 @@ void motorDur() {
     digitalWrite(IN1, LOW); digitalWrite(IN2, LOW); analogWrite(ENA, 0);
     digitalWrite(IN3, LOW); digitalWrite(IN4, LOW); analogWrite(ENB, 0);
 }
+void motorGeri() { 
+    digitalWrite(IN1, HIGH); digitalWrite(IN2, LOW); analogWrite(ENA, 200);
+    digitalWrite(IN3, LOW); digitalWrite(IN4, HIGH); analogWrite(ENB, 200);
+}
+
 
 void setup() {
   // LCD Başlatma
