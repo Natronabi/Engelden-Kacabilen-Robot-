@@ -98,7 +98,7 @@ void loop() {
    else if (mesafe < 25) {
     // --- ENGEL MODU ---
 
-    if(milis()-baslangicZamani >= 5000)
+    if(millis()-baslangicZamani >= 5000)
       lcd.print("!HATA");
       motorDur();
     }
@@ -114,12 +114,14 @@ void loop() {
       digitalWrite(trigPin, HIGH); delayMicroseconds(10); digitalWrite(trigPin, LOW);
       mesafe = pulseIn(echoPin, HIGH) * 0.034 / 2;
     }
-  } else {
+  else 
+  {
     // --- SERBEST SÜRÜŞ MODU ---
     lcd.setCursor(0, 1);
     lcd.print("YOL TEMIZ >>>   ");
-    motorIleriHizli(); 
+    motorIleriHizli();
   }
-  
+
   delay(50); // İşlemci ferahlığı
 }
+
