@@ -1,0 +1,11 @@
+Yapilacaklar (08/03/2026 18:32-22:00)
+Tuba: 
+1- Manevra fonksiyonlarının oluşturulması.
+2- Hız kontrol fonksiyonlarının oluşturulması.
+Şurzan:
+1- Mesafe ölçüm fonksiyonunun oluşturulması.
+2- LCD uyarı fonksiyonunun okuşturulması. 
+3- LCD mesafe fonksiyonunun oluşturulması.
+Büşra:
+1- Gerekliyse akış diyagramının güncellenmesi.
+2- Akış diyagramının kod ile uyumluluğunun kontrolü.
