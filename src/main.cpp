@@ -104,3 +104,4 @@ void loop() {
   delay(50); // İşlemci ferahlığı
 }
 
+//abcd
