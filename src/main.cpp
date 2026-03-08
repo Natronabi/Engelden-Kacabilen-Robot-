@@ -17,13 +17,15 @@ const int IN3 = 7;  // PD7 (Sağ İleri)
 const int IN4 = 6;  // PD6 (Sağ Geri)
 const int ENB = 5;  // PD5 (Sağ Motor Hız - PWM)
 
+unsigned long baslangicZamani = millis();
 long sure;
 int mesafe;
+int donusZamani = 0;
 
 // --- MOTOR KONTROL KATMANI ---
 // Bu kısımlar donanım bağlantısına göre (L298N DC motor sürücüye göre) doldurulacaktır.
 
-void motorIleri() { 
+void motorIleriHizli() { 
     digitalWrite(IN1, HIGH); digitalWrite(IN2, LOW); analogWrite(ENA, 200);
     digitalWrite(IN3, HIGH); digitalWrite(IN4, LOW); analogWrite(ENB, 200);
 }
@@ -41,7 +43,10 @@ void motorGeri() {
     digitalWrite(IN1, LOW); digitalWrite(IN2, HIGH); analogWrite(ENA, 200);
     digitalWrite(IN3, LOW); digitalWrite(IN4, HIGH); analogWrite(ENB, 200);
 }
-
+void motorIleriYavas() { 
+    digitalWrite(IN1, HIGH); digitalWrite(IN2, LOW); analogWrite(ENA, 100);
+    digitalWrite(IN3, HIGH); digitalWrite(IN4, LOW); analogWrite(ENB, 100);
+}
 
 void setup() {
   // LCD Başlatma
@@ -85,8 +90,18 @@ void loop() {
   for (int i = 0; i < barGucu; i++) { lcd.print((char)255); }
 
   // 3. KARAR MEKANİZMASI (20cm - 30cm)
-  if (mesafe < 20) {
+  if(25<mesafe<50){
+    delay(50);
+    motorIleriYavas(); 
+  }
+ 
+   else if (mesafe < 25) {
     // --- ENGEL MODU ---
+
+    if(milis()-baslangicZamani >= 5000)
+      lcd.print("!HATA");
+      motorDur();
+    }
     lcd.setCursor(0, 1);
     lcd.print("! ENGEL VAR !  ");
     motorDur(); 
@@ -103,10 +118,8 @@ void loop() {
     // --- SERBEST SÜRÜŞ MODU ---
     lcd.setCursor(0, 1);
     lcd.print("YOL TEMIZ >>>   ");
-    motorIleri(); 
+    motorIleriHizli(); 
   }
   
   delay(50); // İşlemci ferahlığı
 }
-//tuba
-//abcd
