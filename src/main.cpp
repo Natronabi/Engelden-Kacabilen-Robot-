@@ -17,39 +17,55 @@ const int IN3 = 7;  // PD7 (Sağ İleri)
 const int IN4 = 6;  // PD6 (Sağ Geri)
 const int ENB = 5;  // PD5 (Sağ Motor Hız - PWM)
 
-unsigned long baslangicZamani = millis();
 long sure;
 int mesafe;
 int esik = 25;
-int donusZamani = 0;
 
-// --- MOTOR KONTROL KATMANI ---
-// Bu kısımlar donanım bağlantısına göre (L298N DC motor sürücüye göre) doldurulacaktır.
-
-void motorIleriHizli() { 
-    digitalWrite(IN1, HIGH); digitalWrite(IN2, LOW); analogWrite(ENA, 200);
-    digitalWrite(IN3, HIGH); digitalWrite(IN4, LOW); analogWrite(ENB, 200);
+// ŞURZAN GÖREV 1: Mesafe ölçüm fonksiyonu
+void mesafeOlcum() {
+  digitalWrite(trigPin, LOW); 
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH); 
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  sure = pulseIn(echoPin, HIGH);
+  mesafe = sure * 0.034 / 2;
 }
 
-void motorSag() { 
-    digitalWrite(IN1, HIGH); digitalWrite(IN2, LOW); analogWrite(ENA, 150);
-    digitalWrite(IN3, LOW);  digitalWrite(IN4, HIGH); analogWrite(ENB, 150);
+// ŞURZAN GÖREV 3: LCD mesafe fonksiyonu
+void lcdMesafeGoster() {
+  lcd.setCursor(0, 0);
+  lcd.print("D:"); lcd.print(mesafe); lcd.print("cm ");
+  
+  // Radar Barı (Eski koddaki görsel yapı)
+  int barGucu = map(constrain(mesafe, 5, 50), 5, 50, 9, 0); 
+  lcd.setCursor(16 - barGucu, 0); 
+  for (int i = 0; i < barGucu; i++) { lcd.print((char)255); }
 }
 
-void motorDur() { 
-    digitalWrite(IN1, LOW); digitalWrite(IN2, LOW); analogWrite(ENA, 0);
-    digitalWrite(IN3, LOW); digitalWrite(IN4, LOW); analogWrite(ENB, 0);
-}
-void motorGeri() { 
-    digitalWrite(IN1, LOW); digitalWrite(IN2, HIGH); analogWrite(ENA, 200);
-    digitalWrite(IN3, LOW); digitalWrite(IN4, HIGH); analogWrite(ENB, 200);
-}
-void motorIleriYavas() { 
-    digitalWrite(IN1, HIGH); digitalWrite(IN2, LOW); analogWrite(ENA, 100);
-    digitalWrite(IN3, HIGH); digitalWrite(IN4, LOW); analogWrite(ENB, 100);
+// ŞURZAN GÖREV 2: LCD uyarı fonksiyonu
+void lcdUyariYazdir(String mesaj) {
+  lcd.setCursor(0, 1);
+  lcd.print("                ");
+  lcd.setCursor(0, 1);
+  lcd.print(mesaj);
 }
 
+// TUBA GÖREV 1: Manevra fonksiyonlarının oluşturulması
+void engelKacinmaManevrasiniAktifEt() {
+  // TUBA: Buraya akış şemasına göre motorDur, motorGeri ve motorSag fonksiyonlarını/kodlarını ekle.
+  lcdUyariYazdir("! ENGEL VAR !");
+}
 
+// TUBA GÖREV 2: Hız kontrol fonksiyonlarının oluşturulması
+void hizKontrolModulu() {
+  // TUBA: Buraya mesafeye göre (mesafe > 50 ise hızlı, 25-50 arası yavaş) motorIleri kodlarını ekle.
+  if (mesafe > 50) {
+    lcdUyariYazdir("YOL TEMIZ >>>");
+  } else if (mesafe <= 50 && mesafe > 25) {
+    lcdUyariYazdir("YAVAS SURUS...");
+  }
+}
 
 void setup() {
   // LCD Başlatma
@@ -75,58 +91,18 @@ void setup() {
 }
 
 void loop() {
-  // 1. MESAFE ÖLÇÜMÜ (Ses Hızı Hesabı Dahil)
-  digitalWrite(trigPin, LOW); 
-  delayMicroseconds(2);
-  digitalWrite(trigPin, HIGH); 
-  delayMicroseconds(10);
-  digitalWrite(trigPin, LOW);
-  sure = pulseIn(echoPin, HIGH);
-  mesafe = sure * 0.034 / 2;
+  // 1. MESAFE ÖLÇÜMÜ
+  mesafeOlcum();
 
-  lcd.setCursor(0, 0); lcd.print("                ");
+  // 2. LCD GÖSTERİMİ
+  lcdMesafeGoster();
 
-  // 2. LCD ÜST SATIR (Radar & Mesafe Verisi)
-  lcd.setCursor(0, 0);
-  lcd.print("D:"); lcd.print(mesafe); lcd.print("cm ");
-  
-  // Radar Barı (0-9 karakter arası dinamik dolum)
-  int barGucu = map(constrain(mesafe, 5, 50), 5, 50, 9, 0); 
-  lcd.setCursor(16 - barGucu, 0); 
-  for (int i = 0; i < barGucu; i++) { lcd.print((char)255); }
-
-  // 3. KARAR MEKANİZMASI (20cm - 30cm)
-  if(25<mesafe<50){
-    delay(50);
-    motorIleriYavas(); 
-  }
- 
-  else if (mesafe < esik) {
-    // --- ENGEL MODU ---
-    if(millis()-baslangicZamani >= 5000) {
-      lcd.print("!HATA");
-      motorDur();}
-    lcd.setCursor(0, 1);
-    lcd.print("! ENGEL VAR !  ");
-    motorDur(); 
-    delay(300); // Güvenli duruş için küçük bir bekleme
-    
-    // Yol 30 cm olana kadar manevra döngüsü (Akış Şeması Çıkış Koşulu)
-    while (mesafe < 30) {
-      motorSag(); 
-      // Döngü içinde mesafe güncellemesi
-      digitalWrite(trigPin, HIGH); delayMicroseconds(10); digitalWrite(trigPin, LOW);
-      mesafe = pulseIn(echoPin, HIGH) * 0.034 / 2;
-    }
-  }
-    else
-    {
-    // --- SERBEST SÜRÜŞ MODU ---
-    lcd.setCursor(0, 1);
-    lcd.print("YOL TEMIZ >>>   ");
-    motorIleriHizli();
+  // 3. KARAR MEKANİZMASI (Tuba'nın fonksiyonları çağrılıyor)
+  if (mesafe < esik) {
+    engelKacinmaManevrasiniAktifEt();
+  } else {
+    hizKontrolModulu();
   }
 
   delay(50); // İşlemci ferahlığı
 }
-
